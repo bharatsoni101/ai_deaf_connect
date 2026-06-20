@@ -1,0 +1,69 @@
+ai_deaf_connect/
+
+│
+
+├── frontend/
+
+│   ├── app.py
+│
+│   └── pages/
+│
+│       ├── home.py
+│
+│       └── room.py
+│
+
+├── components/
+
+│   ├── camera_panel.py
+│
+│   ├── subtitle_panel.py
+│
+│   ├── sign_panel.py
+│
+│   └── chat_panel.py
+│
+
+├── backend/
+
+│   ├── server.py
+│
+│   ├── websocket_manager.py
+│
+│   └── signaling.py
+│
+
+├── services/
+
+│   ├── video_processor.py
+│
+│   ├── sign_detector.py
+│
+│   ├── gesture_rules.py
+│
+│   ├── sentence_builder.py
+│
+│   ├── speech_to_text.py
+│
+│   └── translation_service.py
+│
+
+├── database/
+
+│   ├── db.py
+│
+│   └── ai_deaf_connect.db
+│
+
+├── utils/
+
+│   ├── config.py
+│
+│   └── constants.py
+│
+
+├── .env
+│
+├── requirements.txt
+│
+└── README.md
