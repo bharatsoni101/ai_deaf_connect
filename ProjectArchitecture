@@ -1,0 +1,77 @@
+ai_deaf_connect/
+    dataset/
+    │
+    ├── dataset.csv
+
+    models/
+    │
+    ├── train_model.py
+    ├── gesture_model.pkl
+
+    app/
+    │
+    ├── app.py
+    ├── gesture_detector.py
+    ├── text_to_speech.py
+
+
+Approach for model training :
+
+🥇 Option 1 (Recommended): Create your own dataset.csv
+
+Since your application already detects hands, this is the best approach.
+
+Why?
+
+✅ Matches your webcam setup
+✅ Works with Indian users and different lighting conditions
+✅ Small dataset size
+✅ Much easier than image datasets
+✅ Better accuracy for your project
+
+Instead of storing images, store the 21 MediaPipe landmarks.
+
+Each row:
+
+gesture,x0,y0,z0,x1,y1,z1,...,x20,y20,z20
+
+Example:
+
+HELLO,0.52,0.63,-0.04,0.55,0.61,-0.03,...
+THANKYOU,0.49,0.68,-0.02,...
+YES,...
+NO,...
+Suggested target
+
+Start with 20 gestures.
+
+HELLO
+THANKYOU
+YES
+NO
+PLEASE
+HELP
+SORRY
+GOOD
+BAD
+STOP
+COME
+GO
+WATER
+EAT
+DRINK
+LOVE
+MOTHER
+FATHER
+FRIEND
+EMERGENCY
+
+Collect:
+
+300 samples per gesture
+
+Total:
+
+20 × 300 = 6000 samples
+
+This is sufficient for Random Forest.
