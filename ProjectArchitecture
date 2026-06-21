@@ -75,3 +75,36 @@ Total:
 20 × 300 = 6000 samples
 
 This is sufficient for Random Forest.
+
+=============================================================================
+************************* Steps added by ram ********************************
+=============================================================================
+Once dataset.csv is ready 
+From your sample:
+label,x0,y0,z0,x1,y1,z1,....x20,y20,z20
+ZERO,...
+ONE,...
+etc.....
+
+Next Phase: Train a Random Forest Model
+Now we'll build the ML pipeline.
+Phase 2 Roadmap:
+dataset.csv
+      │
+      ▼
+Load Dataset
+      │
+      ▼
+Split Train/Test
+      │
+      ▼
+Train Random Forest
+      │
+      ▼
+Evaluate Accuracy
+      │
+      ▼
+Save gesture_model.pkl
+      │
+      ▼
+Use in Streamlit
