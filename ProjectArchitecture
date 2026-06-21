@@ -5,8 +5,11 @@ ai_deaf_connect/
 
     models/
     │
-    ├── train_model.py
     ├── gesture_model.pkl
+
+    training/
+        │
+        ├── train_model.py
 
     app/
     │

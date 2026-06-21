@@ -1,33 +1,37 @@
 import cv2
 import streamlit as st
 import mediapipe as mp
-from text_to_speech import speak_text
-import time
 
-# -------------------------------
-# STREAMLIT UI CONFIGURATION
-# -------------------------------
+from services.gesture_predictor import GesturePredictor
+from services.text_to_speech import speak_text
 
-# Set page title and layout
+
+# ==========================================================
+# STREAMLIT PAGE CONFIGURATION
+# ==========================================================
+
 st.set_page_config(
-    page_title="Hand Gesture Word Identifier",
+    page_title="AI Hand Gesture Recognition",
     layout="centered"
 )
 
-st.title("🖐️ 10-Word Hand Gesture Identifier")
+st.title("🖐️ AI Hand Gesture Recognition")
+st.write("Detects hand gestures using MediaPipe + Machine Learning.")
 
-st.text("This app uses your webcam and detects hand gestures using MediaPipe.")
+# ==========================================================
+# INITIALIZE MACHINE LEARNING MODEL
+# ==========================================================
 
-# -------------------------------
-# MEDIA PIPE INITIALIZATION
-# -------------------------------
+# Load the trained Random Forest model only once
+predictor = GesturePredictor()
 
-# MediaPipe solution for hand tracking
+# ==========================================================
+# INITIALIZE MEDIAPIPE
+# ==========================================================
+
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
-# Create hand detection model
-# max_num_hands=1 → only detect one hand at a time
 hands = mp_hands.Hands(
     static_image_mode=False,
     max_num_hands=1,
@@ -35,172 +39,117 @@ hands = mp_hands.Hands(
     min_tracking_confidence=0.7
 )
 
-# -------------------------------
+# ==========================================================
 # STREAMLIT CONTROLS
-# -------------------------------
+# ==========================================================
 
-# Checkbox to start/stop webcam
-run = st.checkbox('Start Webcam Feed')
+run = st.checkbox("Start Webcam Feed")
 
-# Placeholder where video frames will be shown
 FRAME_WINDOW = st.image([])
 
-# Open webcam (0 = default camera)
 camera = cv2.VideoCapture(0)
 
-# -------------------------------
-# FUNCTION: DETECT GESTURE
-# -------------------------------
+# ==========================================================
+# SESSION STATE
+# ==========================================================
 
-def evaluate_gesture(landmarks):
-    """
-    This function converts hand landmarks into finger states
-    and maps them to a word.
-
-    Input:
-        landmarks → 21 hand points from MediaPipe
-
-    Output:
-        String word (ZERO, ONE, TWO, etc.)
-    """
-
-    # Finger tip IDs in MediaPipe model
-    # Thumb = 4, Index = 8, Middle = 12, Ring = 16, Little = 20
-    tip_ids = [4, 8, 12, 16, 20]
-
-    # Store finger states (1 = open, 0 = closed)
-    fingers = []
-
-    # -------------------------------
-    # THUMB CHECK (horizontal movement)
-    # -------------------------------
-    # Thumb behaves differently than other fingers
-    # So we compare X-axis positions
-    if landmarks[tip_ids[0]].x < landmarks[tip_ids[0] - 1].x:
-        fingers.append(1)  # Thumb is open
-    else:
-        fingers.append(0)  # Thumb is closed
-
-    # -------------------------------
-    # OTHER 4 FINGERS CHECK (vertical movement)
-    # -------------------------------
-    # We compare Y-axis values for finger open/close
-    for i in range(1, 5):
-        if landmarks[tip_ids[i]].y < landmarks[tip_ids[i] - 2].y:
-            fingers.append(1)  # Finger is open
-        else:
-            fingers.append(0)  # Finger is closed
-
-    # -------------------------------
-    # MAP FINGER PATTERN TO WORDS
-    # -------------------------------
-
-    if fingers == [0, 0, 0, 0, 0]:
-        return "ZERO"
-
-    elif fingers == [0, 1, 0, 0, 0]:
-        return "ONE"
-
-    elif fingers == [0, 1, 1, 0, 0]:
-        return "TWO"
-
-    elif fingers == [0, 1, 1, 1, 0]:
-        return "THREE"
-
-    elif fingers == [0, 1, 1, 1, 1]:
-        return "FOUR"
-
-    elif fingers == [1, 1, 1, 1, 1]:
-        return "FIVE"
-
-    elif fingers == [1, 0, 0, 0, 1]:
-        return "ROCK"
-
-    elif fingers == [1, 1, 0, 0, 1]:
-        return "SPIDERMAN"
-
-    elif fingers == [1, 0, 1, 1, 1]:
-        return "OK"
-
-    elif fingers == [1, 1, 1, 0, 0]:
-        return "SIX"
-
-    else:
-        return "UNRECOGNIZED"
-
-# -------------------------------
-# MAIN VIDEO LOOP
-# -------------------------------
 if "last_spoken_word" not in st.session_state:
     st.session_state.last_spoken_word = ""
 
+# ==========================================================
+# MAIN LOOP
+# ==========================================================
+
 while run:
 
-    # Read frame from webcam
     success, frame = camera.read()
 
-    # If camera fails
     if not success:
-        st.warning("Webcam not accessed or unavailable.")
+        st.warning("Unable to access webcam.")
         break
 
-    # Flip frame horizontally (mirror view)
+    # Mirror image
     frame = cv2.flip(frame, 1)
 
-    # Convert BGR → RGB (required by MediaPipe)
+    # Convert to RGB
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    # Process frame to detect hands
+    # Detect hands
     results = hands.process(rgb_frame)
 
     # Default text if no hand is detected
     word_detected = "No Hand Detected"
+    confidence = 0.0
 
-    # If hand is found in frame
+    # ------------------------------------------------------
+    # Hand Detected
+    # ------------------------------------------------------
+
     if results.multi_hand_landmarks:
 
         for hand_landmarks in results.multi_hand_landmarks:
 
-            # Draw hand skeleton on screen
+            # Draw hand landmarks
             mp_drawing.draw_landmarks(
                 frame,
                 hand_landmarks,
                 mp_hands.HAND_CONNECTIONS
             )
 
-            # Convert landmarks into a word
-            word_detected = evaluate_gesture(hand_landmarks.landmark)
+            # -------------------------------
+            # ML Prediction
+            # -------------------------------
 
-            # inside loop after word_detected:
-            if word_detected != st.session_state.last_spoken_word:
+            word_detected, confidence = predictor.predict(
+                hand_landmarks.landmark
+            )
+
+            # Speak only when gesture changes
+            if (
+                word_detected != st.session_state.last_spoken_word
+                and word_detected not in ["UNRECOGNIZED", "No Hand Detected"]
+            ):
+
                 speak_text(word_detected)
+
                 st.session_state.last_spoken_word = word_detected
 
-    # -------------------------------
-    # DISPLAY OUTPUT ON SCREEN
-    # -------------------------------
+    # ======================================================
+    # DRAW TEXT ON FRAME
+    # ======================================================
 
-    # Write detected word on frame
     cv2.putText(
         frame,
-        f"WORD: {word_detected}",
-        (10, 50),
+        f"Gesture : {word_detected}",
+        (10, 40),
         cv2.FONT_HERSHEY_SIMPLEX,
-        1,
+        0.9,
         (0, 255, 0),
-        3
+        2
     )
 
-    # Convert back to RGB for Streamlit display
+    cv2.putText(
+        frame,
+        f"Confidence : {confidence:.2f}%",
+        (10, 80),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.8,
+        (255, 255, 0),
+        2
+    )
+
+    # Convert frame back to RGB
     output_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    # Show frame in Streamlit UI
+    # Show frame
     FRAME_WINDOW.image(output_frame)
 
-# -------------------------------
-# CLEANUP WHEN STOPPED
-# -------------------------------
+# ==========================================================
+# CLEANUP
+# ==========================================================
 
 else:
+
     camera.release()
+
     st.info("Webcam stopped.")

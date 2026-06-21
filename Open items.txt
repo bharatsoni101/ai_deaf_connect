@@ -1,0 +1,12 @@
+Open items which need to discuss
+1. How to perform model evalution and how to choose method for same evalution.
+Like we did in current project 
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+)
+
+2. How draw dataset.csv in matplot lib and undersatnd the x, y-axis data using graph.
+3. Which model we used to train dataset for Hand Gesture Word requiment.
+4. How you have created your dataset and prepared dataset.csv.
