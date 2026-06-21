@@ -1,60 +1,65 @@
-# 🖐️ Hand Gesture Word Identifier
+# 🖐️ Hand Gesture Word Identifier with Text-to-Speech
 
-A Streamlit-based application that uses MediaPipe and OpenCV to detect hand gestures from a webcam feed and identify simple words based on finger positions.
+A Streamlit-based application that uses **MediaPipe**, **OpenCV**, and **Google Text-to-Speech (gTTS)** to detect hand gestures from a webcam feed, convert them into predefined words, and automatically speak the detected words.
 
-This project recognizes 10 predefined gestures and displays the detected word in real time.
-
----
-
-## Features
-
-* Real-time webcam processing
-* Hand tracking using MediaPipe
-* Finger state detection (open/closed)
-* Recognizes 10 predefined words
-* Simple Streamlit user interface
-* Runs completely on a local machine
+This project currently recognizes **10 predefined hand gestures** and provides **real-time visual and audio feedback**.
 
 ---
 
-## Technologies Used
+# 📌 Features
+
+* 🎥 Real-time webcam processing
+* 🖐️ Hand tracking using MediaPipe
+* ✋ Finger state detection (Open / Closed)
+* 🔤 Recognizes 10 predefined words
+* 🔊 Automatic Text-to-Speech conversion
+* 🖥️ Simple Streamlit user interface
+* ⚡ Runs completely on a local machine
+* 🧩 Beginner-friendly project structure
+
+---
+
+# 🛠️ Technologies Used
 
 * Python 3.11
 * Streamlit
 * OpenCV
 * MediaPipe
 * NumPy
+* Google Text-to-Speech (gTTS)
 
 ---
 
-## Project Structure
+# 📁 Project Structure
 
 ```text
 project_folder/
 │
 ├── app.py
+├── text_to_speech.py
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Requirements
+# 📦 Requirements
 
-Create a `requirements.txt` file containing:
+Create a `requirements.txt` file with the following content:
 
 ```text
 streamlit==1.54.0
-opencv-python==4.12.0.88
 mediapipe==0.10.21
-numpy==2.2.6
+numpy==1.26.4
+opencv-python==4.9.0.80
+gTTS==2.5.3
 ```
 
 ---
 
-## Installation
+# ⚙️ Installation
 
-### 1. Clone the repository
+## 1. Clone the repository
 
 ```bash
 git clone <repository_url>
@@ -62,27 +67,33 @@ git clone <repository_url>
 cd <repository_name>
 ```
 
-### 2. Create a virtual environment
+---
 
-Windows
+## 2. Create a virtual environment
+
+### Windows
 
 ```bash
 python -m venv .venv
 ```
 
-Activate environment
+Activate the environment:
 
 ```bash
 .venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+---
+
+## 3. Install dependencies
+
+Using pip:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-or
+or using uv:
 
 ```bash
 uv pip install -r requirements.txt
@@ -90,7 +101,7 @@ uv pip install -r requirements.txt
 
 ---
 
-## Run the application
+# 🚀 Run the Application
 
 Start Streamlit:
 
@@ -100,7 +111,7 @@ streamlit run app.py
 
 The application will open in your browser.
 
-Usually:
+Default URL:
 
 ```text
 http://localhost:8501
@@ -108,18 +119,19 @@ http://localhost:8501
 
 ---
 
-## How It Works
+# 🧠 How It Works
 
 1. The webcam captures live video frames.
-2. MediaPipe detects hand landmarks.
+2. MediaPipe detects the hand and its 21 landmarks.
 3. Finger positions are analyzed.
-4. The application determines which fingers are open or closed.
-5. A predefined gesture is mapped to a word.
+4. Each finger is marked as Open (1) or Closed (0).
+5. The finger pattern is mapped to a predefined word.
 6. The detected word is displayed on the screen.
+7. The detected word is automatically converted into speech.
 
 ---
 
-## Supported Gestures
+# 🖐️ Supported Gestures
 
 | Finger Pattern | Detected Word |
 | -------------- | ------------- |
@@ -134,12 +146,9 @@ http://localhost:8501
 | 10111          | OK            |
 | 11100          | SIX           |
 
-Where:
+---
 
-* 1 = Finger Open
-* 0 = Finger Closed
-
-Finger order:
+## Finger Order
 
 ```text
 Thumb
@@ -149,23 +158,70 @@ Ring
 Little
 ```
 
+Where:
+
+```text
+1 = Finger Open
+0 = Finger Closed
+```
+
+Example:
+
+```text
+01100
+
+Thumb  = Closed
+Index  = Open
+Middle = Open
+Ring   = Closed
+Little = Closed
+
+Result = TWO
+```
+
 ---
 
-## Controls
+# 🎮 Application Controls
 
-### Start Webcam Feed
+## Start Webcam Feed
 
-Check the box to start webcam detection.
+Enable the checkbox to start hand detection.
 
-### Stop Webcam Feed
+## Stop Webcam Feed
 
-Uncheck the box to stop webcam detection.
+Disable the checkbox to stop webcam detection.
 
 ---
 
-## Troubleshooting
+# 🔊 Text-to-Speech
 
-### Webcam not accessed or unavailable
+The application automatically converts detected words into speech.
+
+Examples:
+
+```text
+ONE
+TWO
+THREE
+FOUR
+FIVE
+ROCK
+SPIDERMAN
+OK
+```
+
+The following values are ignored:
+
+```text
+UNRECOGNIZED
+No Hand Detected
+```
+
+---
+
+# ⚠️ Troubleshooting
+
+## Webcam not accessed or unavailable
 
 Possible reasons:
 
@@ -190,51 +246,57 @@ Enable:
 ✓ Let desktop apps access your camera
 ```
 
-Close applications that may use the webcam:
+Close applications that may be using the webcam:
 
 * Zoom
 * Microsoft Teams
 * Google Meet
 * WhatsApp Desktop
 * OBS Studio
+* Skype
 
 ---
 
-## Limitations
+# ⚠️ Current Limitations
 
 This application uses simple finger-count logic.
 
-It is not a complete sign language recognition system.
+It is **not a complete sign language recognition system**.
 
-The following are not supported:
+Currently, it does not support:
 
 * Dynamic gestures
 * Sentence formation
+* Continuous sign language recognition
 * Full sign language vocabulary
-* Multi-hand conversations
+* Two-person communication
+* Multi-hand detection
 
 ---
 
-## Future Enhancements
+# 🚀 Future Enhancements
 
-* Support 200+ sign language words
-* AI-based gesture recognition
-* Sentence generation
-* Text-to-Speech conversion
-* Speech-to-Text conversion
-* Two-person video conferencing
-* Integration with AI Deaf Connect
+Planned improvements:
+
+* 🤖 AI-based gesture recognition
+* 📚 Support for 200+ sign language words
+* 📝 Sentence generation
+* 🗣️ Speech-to-Text conversion
+* 🔊 Improved Text-to-Speech
+* 🎥 Two-person video conferencing
+* 🌐 Real-time communication system
+* ♿ Integration with AI Deaf Connect
 
 ---
 
-## Author
+# 👨‍💻 Author
 
 Bharat Soni
 
-AI and Python enthusiast working on AI-based accessibility applications.
+Techno-managerial professional and AI enthusiast working on AI-powered accessibility applications.
 
 ---
 
-## License
+# 📄 License
 
-This project is for educational and learning purposes.
+This project is intended for educational, learning, and research purposes.

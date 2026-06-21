@@ -1,7 +1,8 @@
 import cv2
-import numpy as np
 import streamlit as st
 import mediapipe as mp
+from text_to_speech import speak_text
+import time
 
 # -------------------------------
 # STREAMLIT UI CONFIGURATION
@@ -130,6 +131,8 @@ def evaluate_gesture(landmarks):
 # -------------------------------
 # MAIN VIDEO LOOP
 # -------------------------------
+if "last_spoken_word" not in st.session_state:
+    st.session_state.last_spoken_word = ""
 
 while run:
 
@@ -167,6 +170,11 @@ while run:
 
             # Convert landmarks into a word
             word_detected = evaluate_gesture(hand_landmarks.landmark)
+
+            # inside loop after word_detected:
+            if word_detected != st.session_state.last_spoken_word:
+                speak_text(word_detected)
+                st.session_state.last_spoken_word = word_detected
 
     # -------------------------------
     # DISPLAY OUTPUT ON SCREEN
