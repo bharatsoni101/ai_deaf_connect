@@ -10,3 +10,18 @@ from sklearn.metrics import (
 2. How draw dataset.csv in matplot lib and undersatnd the x, y-axis data using graph.
 3. Which model we used to train dataset for Hand Gesture Word requiment.
 4. How you have created your dataset and prepared dataset.csv.
+
+---------------------------
+
+This application can use for :
+1, Deaf person Interview/Video conference,
+2, And also can be used for communication between deaf and normal person.
+2, if Deaf person is your customer then you can use this application for communication with them.
+
+---------------------------------
+
+Open items which we need to complete :
+1, Two features
+2, Face expression recognition
+4, google integration
+5, LLM integration
