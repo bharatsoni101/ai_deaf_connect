@@ -25,3 +25,4 @@ Open items which we need to complete :
 2, Face expression recognition
 4, google integration
 5, LLM integration
+6, How to improve dataset with new words and gestures.
