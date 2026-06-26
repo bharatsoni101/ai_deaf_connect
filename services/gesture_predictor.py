@@ -33,8 +33,8 @@ class GesturePredictor:
     Loads the trained gesture recognition model and
     predicts hand gestures from MediaPipe landmarks.
     """
-
-    def __init__(self, model_path="models/gesture_model.pkl"):
+    def __init__(self, model_path="models/gesture_AtoZ_model.pkl"):
+    #def __init__(self, model_path="models/gesture_model.pkl"):
         """
         Load the trained model once during initialization.
         """
